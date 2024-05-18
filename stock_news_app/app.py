@@ -22,15 +22,24 @@ else:
 if news_data:
     df = pd.DataFrame(news_data)
 else:
-    df = pd.DataFrame(columns=["title", "link", "published"])
+    df = pd.DataFrame(columns=["Title", "URL", "Source"])
 
 # Streamlit app
 st.title("Share Market News")
 st.write("Latest news from the share market:")
 
-# Display the table
-if not df.empty:
-    st.dataframe(df)
-else:
-    st.write("No news available at the moment.")
+# Search bar
+search_query = st.text_input("Search for news:", "")
 
+# Filter news based on search query
+filtered_df = df[df["Title"].str.contains(search_query, case=False) | df["Source"].str.contains(search_query, case=False)]
+
+# Display cards for each news item
+if not filtered_df.empty:
+    for i, (index, row) in enumerate(filtered_df.iterrows(), start=1):
+        st.write(f"**{i}. {row['Title']}**")
+        st.write(f"Source: {row['Source']}")
+        st.write(f"URL: [{row['URL']}]({row['URL']})")
+        st.write("---")
+else:
+    st.write("No news available matching the search criteria.")
